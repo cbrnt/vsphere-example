@@ -37,7 +37,7 @@ variable "network_name" {
   type        = string
 }
 
-variable "ubuntu_name" {
-  description = "Ubuntu name (ie: image_path)"
+variable "almalinux_name" {
+  description = "Almalinux name (ie: image_path)"
   type        = string
 }

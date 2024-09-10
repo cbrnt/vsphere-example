@@ -24,18 +24,18 @@ data "vsphere_compute_cluster" "cluster" {
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
-data "vsphere_network" "network" {
-  name          = var.network_name
+# data "vsphere_network" "network" {
+#   name          = var.network_name
+#   datacenter_id = data.vsphere_datacenter.datacenter.id
+# }
+
+data "vsphere_virtual_machine" "template" {
+  name          = "/${var.datacenter}/vm/${var.almalinux_name}"
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
-data "vsphere_virtual_machine" "ubuntu" {
-  name          = "/${var.datacenter}/vm/${var.ubuntu_name}"
-  datacenter_id = data.vsphere_datacenter.datacenter.id
-}
-
-resource "vsphere_virtual_machine" "learn" {
-  name             = "learn-terraform"
+resource "vsphere_virtual_machine" "vm1" {
+  name             = "MSP_stateful_test_vm01"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
 
@@ -43,8 +43,27 @@ resource "vsphere_virtual_machine" "learn" {
   memory   = 1024
 
   network_interface {
-    network_id = data.vsphere_network.network.id
+    # network_id = data.vsphere_network.network.id
+    network_id = "6ec0d2b7-2f04-4ebb-b58d-506b16bcd764"
   }
+
+   clone {
+    template_uuid = "${data.vsphere_virtual_machine.template.id}"
+ 
+    customize {
+      linux_options {
+        host_name = "MSP_stateful_test_vm01"
+        domain    = "msp.komus.net"
+      }
+      dns_server_list     = ["10.160.192.5", "10.160.208.5"]
+      network_interface {
+        ipv4_address = "172.16.8.159"
+        ipv4_netmask = 16
+      }
+ 
+      ipv4_gateway = "172.16.8.1"
+    }
+   }
 
   wait_for_guest_net_timeout = -1
   wait_for_guest_ip_timeout  = -1
@@ -55,13 +74,13 @@ resource "vsphere_virtual_machine" "learn" {
     size             = 32
   }
 
-  guest_id = "ubuntu64Guest"
-
-  clone {
-    template_uuid = data.vsphere_virtual_machine.ubuntu.id
-  }
+  guest_id = "${data.vsphere_virtual_machine.template.guest_id}"
 }
 
-output "vm_ip" {
-  value = vsphere_virtual_machine.learn.guest_ip_addresses
+output "vm1_ip_address" {
+  value = vsphere_virtual_machine.vm1.guest_ip_addresses
+}
+
+output "cluster_id" {
+  value = data.vsphere_datacenter.datacenter.id
 }
