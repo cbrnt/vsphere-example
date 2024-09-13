@@ -76,11 +76,3 @@ resource "vsphere_virtual_machine" "vm1" {
 
   guest_id = "${data.vsphere_virtual_machine.template.guest_id}"
 }
-
-output "vm1_ip_address" {
-  value = vsphere_virtual_machine.vm1.guest_ip_addresses
-}
-
-output "cluster_id" {
-  value = data.vsphere_datacenter.datacenter.id
-}
