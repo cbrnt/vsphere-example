@@ -44,7 +44,7 @@ resource "vsphere_virtual_machine" "vm1" {
 
   network_interface {
     # network_id = data.vsphere_network.network.id
-    network_id = "6ec0d2b7-2f04-4ebb-b58d-506b16bcd764"
+    network_id = "network-78"
   }
 
    clone {
@@ -52,16 +52,16 @@ resource "vsphere_virtual_machine" "vm1" {
  
     customize {
       linux_options {
-        host_name = "MSP_stateful_test_vm01"
+        host_name = "msp-stateful-test-vm01"
         domain    = "msp.komus.net"
       }
       dns_server_list     = ["10.160.192.5", "10.160.208.5"]
       network_interface {
-        ipv4_address = "172.16.8.159"
+        ipv4_address = "172.16.1.159"
         ipv4_netmask = 16
       }
  
-      ipv4_gateway = "172.16.8.1"
+      ipv4_gateway = "172.16.1.1"
     }
    }
 
